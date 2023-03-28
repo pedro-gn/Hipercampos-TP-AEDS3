@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "../include/utils.h"
 
 
 /* Testa se um ponto esta acima das duas retas formadas pelas ancoras 
