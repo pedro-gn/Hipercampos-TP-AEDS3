@@ -2,20 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
+#include <sys/resource.h>
+
 #include "../include/utils.h"
 
 
 
-/* 
- *  Compara a cordenada y do ponto1 e do ponto2
- *  retorna  n>0 se for maior n=0 se for menor e n<0 se for menor.
- *  usada na operacao de qsort
- */
-int cmpPointsY(const void *point1, const void *point2){
-    int y1 = ((Point*)point1) -> y;
-    int y2 = ((Point*)point2) -> y;
-    return y1 - y2;
-}
+
+
+
 
 
 /*
@@ -65,46 +61,54 @@ int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point s
 
 int main(int argc, char *argv[]){
     int max = 0 ; //resultado
+    
     int opt;
-    char inputFileName[] = "test.txt";
+    char *inputFileName;
     char *outputFileName = NULL;
 
     int numberOfPoints;
     Point anchorA, anchorB; 
     Point *pointsArray = NULL;
-    // Point *sequence[numberOfPoints];
-    // if ( argc < 5){
-    //     fprintf(stderr,"Faltando argumentos! \n");
-    //     return 0;
-    // }
 
-    // while( (opt = getopt(argc, argv, "i:o:")) > 0 ) {
+    if ( argc < 5){
+        fprintf(stderr,"Faltando argumentos! \n");
+        return 0;
+    }
+
+    while( (opt = getopt(argc, argv, "i:o:")) > 0 ) {
         
-    //     switch ( opt ) {
-    //         case 'i':
-    //             inputFileName = optarg;
-    //             break;
-    //         case 'o': 
-    //             outputFileName = optarg;
-    //             break;
-    //         default:
-    //             fprintf(stderr, "Opcao invalida `%c'\n", optopt) ;
-    //             return -1 ;
-    //     }
-    // }
+        switch ( opt ) {
+            case 'i':
+                inputFileName = optarg;
+                break;
+            case 'o': 
+                outputFileName = optarg;
+                break;
+            default:
+                fprintf(stderr, "Opcao invalida `%c'\n", optopt) ;
+                return -1 ;
+        }
+    }
 
 
     // le o arquivo
     inputRead(inputFileName, &pointsArray, &anchorA, &anchorB, &numberOfPoints);
 
+
+
     // ordena em ordem crescente os pontos em relacao a cordenada Y
     qsort(pointsArray, numberOfPoints, sizeof(Point), cmpPointsY);
 
+
+
     Point sequence[numberOfPoints];
+    
+    //gera todas as possibilidades e retorna a maior sequencia
     max = generateSequences(pointsArray, numberOfPoints, 0, sequence, 0, anchorA, anchorB, max);
 
-    printf("%d", max);
 
+
+    printf("%d", max);
     free(pointsArray);
     return 0;
 }

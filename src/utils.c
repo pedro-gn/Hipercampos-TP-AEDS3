@@ -1,8 +1,22 @@
 #include "../include/utils.h"
 
+
+
+/* 
+ *  Compara a cordenada y do ponto1 e do ponto2
+ *  retorna  n>0 se for maior n=0 se for menor e n<0 se for menor.
+ *  usada na operacao de qsort
+ */
+int cmpPointsY(const void *point1, const void *point2){
+    int y1 = ((Point*)point1) -> y;
+    int y2 = ((Point*)point2) -> y;
+    return y1 - y2;
+}
+
+
 /* 
  * Testa se um ponto esta acima das duas retas formadas pelas ancoras 
- * e pelo ponto escolhido anteriormente
+ * e pelo ponto anterior na sequencia
  */
 bool isAbove(Point anchorA, Point anchorB, Point prevP, Point testP){
 
@@ -52,9 +66,8 @@ bool isAbove(Point anchorA, Point anchorB, Point prevP, Point testP){
 }
 
 
-
 /*
- * Lê o arquivo de entrada e serve as variadas recebidas por parametro com os valores lidos.
+ * Lê o arquivo de entrada e serve as variaveiss recebidas por parametro com os valores lidos.
  * Obs: pointsArray depois de usado prescisa ser liberado com Free().
  */
 void inputRead(char *inputFileName, Point **pointsArray, Point *anchorA, Point *anchorB, int *numberOfPoints ){
