@@ -20,7 +20,7 @@ bool isAbove(Point anchorA, Point anchorB, Point prevP, Point testP);
 void inputRead(char *inputFileName, Point **pointsArray, Point *anchorA, Point *anchorB, int *numberOfPoints );
 
 
-
+void outputResult(int result, char *outputFileName);
 
 
 #endif //UTILS_H

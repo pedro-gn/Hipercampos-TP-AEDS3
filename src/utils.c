@@ -2,6 +2,15 @@
 
 
 
+/*
+ * Escreve a o resultado do programa em um arquivo de texto com o nome passado
+ */
+void outputResult(int result, char *outputFileName){
+    FILE *outputFile = fopen(outputFileName, "w");
+    fprintf(outputFile, "%d", result);
+    fclose(outputFile);
+}
+
 /* 
  *  Compara a cordenada y do ponto1 e do ponto2
  *  retorna  n>0 se for maior n=0 se for menor e n<0 se for menor.

@@ -8,10 +8,17 @@
 #include "../include/utils.h"
 
 
+float diffUserTime(struct rusage *start, struct rusage *end)
+{
+    return (end->ru_utime.tv_sec - start->ru_utime.tv_sec) +
+           1e-6*(end->ru_utime.tv_usec - start->ru_utime.tv_usec);
+}
 
-
-
-
+float diffSystemTime(struct rusage *start, struct rusage *end)
+{
+    return (end->ru_stime.tv_sec - start->ru_stime.tv_sec) +
+           1e-6*(end->ru_stime.tv_usec - start->ru_stime.tv_usec);
+}
 
 
 /*
@@ -29,14 +36,6 @@
 int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point sequence[], int seqIndex, Point anchorA, Point anchorB, int maxSeq){
 
     if (index >= numberOfPoints) {
-        // Imprime a sequência gerada
-        // printf("Sequence: ");
-        // for (int i = 0; i < seqIndex; i++) {
-        //     printf("(%d,%d) ", sequence[i].x, sequence[i].y);
-            
-        // }
-        // printf(" %d", seqIndex);
-        // printf("\n");
 
         if(seqIndex > maxSeq){
             maxSeq = seqIndex;
@@ -45,14 +44,12 @@ int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point s
         return maxSeq;
     }
 
-
     // Gera uma sequência que inclui o ponto atual
     if (seqIndex == 0 || isAbove(anchorA, anchorB, sequence[seqIndex-1], pointsArray[index])) {
         sequence[seqIndex] = pointsArray[index];
         maxSeq = generateSequences(pointsArray, numberOfPoints, index+1, sequence, seqIndex+1, anchorA, anchorB, maxSeq);
     }
-
-    
+ 
     // Gera sequências que não incluem o ponto atual
     maxSeq = generateSequences(pointsArray, numberOfPoints, index+1, sequence, seqIndex, anchorA, anchorB, maxSeq);
 };
@@ -61,14 +58,18 @@ int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point s
 
 int main(int argc, char *argv[]){
     int max = 0 ; //resultado
-    
+
     int opt;
-    char *inputFileName;
+    char *inputFileName = NULL;
     char *outputFileName = NULL;
 
     int numberOfPoints;
     Point anchorA, anchorB; 
     Point *pointsArray = NULL;
+
+    //medir tempo
+    struct rusage start, end;
+
 
     if ( argc < 5){
         fprintf(stderr,"Faltando argumentos! \n");
@@ -94,21 +95,28 @@ int main(int argc, char *argv[]){
     // le o arquivo
     inputRead(inputFileName, &pointsArray, &anchorA, &anchorB, &numberOfPoints);
 
-
-
     // ordena em ordem crescente os pontos em relacao a cordenada Y
     qsort(pointsArray, numberOfPoints, sizeof(Point), cmpPointsY);
 
-
-
+    //array auxiliar para armazenar as sequencias de pontos
     Point sequence[numberOfPoints];
-    
+
+
+    getrusage(RUSAGE_SELF, &start);
     //gera todas as possibilidades e retorna a maior sequencia
     max = generateSequences(pointsArray, numberOfPoints, 0, sequence, 0, anchorA, anchorB, max);
+    getrusage(RUSAGE_SELF, &end);
 
-
-
+    printf("Tempo de computacao :\n");
+    printf("  CPU time: %.06f sec user, %.06f sec system\n",
+           diffUserTime(&start, &end), diffSystemTime(&start, &end));
     printf("%d", max);
+
+
+
+    //coloca o resultado no .txt
+    outputResult(max, outputFileName);
+
     free(pointsArray);
     return 0;
 }
