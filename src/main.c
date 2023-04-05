@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <time.h>
+#include <sys/time.h>
 #include <sys/resource.h>
 
 #include "../include/utils.h"
@@ -68,8 +68,8 @@ int main(int argc, char *argv[]){
     Point *pointsArray = NULL;
 
     //medir tempo
-    struct rusage start, end;
-
+    struct rusage star, en;
+    struct timeval start, end;
 
     if ( argc < 5){
         fprintf(stderr,"Faltando argumentos! \n");
@@ -102,16 +102,24 @@ int main(int argc, char *argv[]){
     Point sequence[numberOfPoints];
 
 
-    getrusage(RUSAGE_SELF, &start);
+    gettimeofday(&start, NULL);
+    getrusage(RUSAGE_SELF, &star);
+
     //gera todas as possibilidades e retorna a maior sequencia
     max = generateSequences(pointsArray, numberOfPoints, 0, sequence, 0, anchorA, anchorB, max);
-    getrusage(RUSAGE_SELF, &end);
+
+    getrusage(RUSAGE_SELF, &en);
+    gettimeofday(&end, NULL);
+
 
     printf("Tempo de computacao :\n");
     printf("  CPU time: %.06f sec user, %.06f sec system\n",
-           diffUserTime(&start, &end), diffSystemTime(&start, &end));
-    printf("%d", max);
+           diffUserTime(&star, &en), diffSystemTime(&star, &en));
 
+
+
+    printf("Time taken to count to 10^5 is : %f seconds\n",
+    1e-6*((end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)));
 
 
     //coloca o resultado no .txt
