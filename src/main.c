@@ -59,10 +59,12 @@ int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point s
 int main(int argc, char *argv[]){
     int max = 0 ; //resultado
 
+    //variaveis i/o
     int opt;
     char *inputFileName = NULL;
     char *outputFileName = NULL;
 
+    //variaveis do problema
     int numberOfPoints;
     Point anchorA, anchorB; 
     Point *pointsArray = NULL;
@@ -91,7 +93,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-
+    
     // le o arquivo
     inputRead(inputFileName, &pointsArray, &anchorA, &anchorB, &numberOfPoints);
 
@@ -113,12 +115,10 @@ int main(int argc, char *argv[]){
 
 
     printf("Tempo de computacao :\n");
-    printf("  CPU time: %.06f sec user, %.06f sec system\n",
-           diffUserTime(&star, &en), diffSystemTime(&star, &en));
+    printf("  CPU time: %.06f sec user, %.06f sec system\n", diffUserTime(&star, &en), diffSystemTime(&star, &en));
 
 
-
-    printf("Time taken to count to 10^5 is : %f seconds\n",
+    printf("Tempo de rologio : %f seconds\n",
     1e-6*((end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)));
 
 
