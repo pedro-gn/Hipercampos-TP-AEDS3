@@ -56,7 +56,7 @@ int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point s
 };
 
 
-//t
+
 int main(int argc, char *argv[]){
     int max = 0 ; //resultado
 
