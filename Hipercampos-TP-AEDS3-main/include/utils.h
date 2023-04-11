@@ -17,8 +17,9 @@ int cmpPointsY(const void *point1, const void *point2);
 
 bool isValidPoint(Point anchorA, Point anchorB, Point prevP, Point testP);
 
-void inputRead(char *inputFileName, Point **pointsArray, Point *anchorA, Point *anchorB, int *numberOfPoints );
+int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point sequence[], int seqIndex, Point anchorA, Point anchorB, int maxSeq);
 
+void inputRead(char *inputFileName, Point **pointsArray, Point *anchorA, Point *anchorB, int *numberOfPoints );
 
 void outputResult(int result, char *outputFileName);
 

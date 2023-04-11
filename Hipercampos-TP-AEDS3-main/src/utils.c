@@ -35,7 +35,7 @@ bool isValidPoint(Point anchorA, Point anchorB, Point prevP, Point testP){
 
 
     if( anchorA.x == prevP.x ){  
-        //quando o ponto esta no mesmo eixo x q a ancora A
+        // Quando a coordenada x do ponto for a mesma que a da ancora A
         m2 = (float)(prevP.y - anchorB.y) / (float)(prevP.x - anchorB.x);
         b2 = anchorB.y - (m2 * anchorB.x);
 
@@ -46,7 +46,7 @@ bool isValidPoint(Point anchorA, Point anchorB, Point prevP, Point testP){
         }
 
     }else if(anchorB.x == prevP.x){
-        //quando o ponto esta no mesmo eixo x q a ancora B
+        // Quando a coordenada x do ponto for a mesma que a da ancora B
         m1 = (prevP.y - anchorA.y) / (prevP.x - anchorA.x);
         b1 = anchorA.y - (m1 * anchorA.x);
 
@@ -57,6 +57,7 @@ bool isValidPoint(Point anchorA, Point anchorB, Point prevP, Point testP){
         }
 
     }else if(prevP.x > anchorB.x){
+        // Quando a coordenada x do ponto for maior que a da ancora B
         m1 = (float)(prevP.y - anchorA.y) / (float)(prevP.x - anchorA.x);
         b1 = (float)anchorA.y - (m1 * (float)anchorA.x);
         m2 = (float)(prevP.y - anchorB.y) / (float)(prevP.x - anchorB.x);
@@ -72,18 +73,18 @@ bool isValidPoint(Point anchorA, Point anchorB, Point prevP, Point testP){
         
         
     }else if(prevP.x < anchorA.x){
+        // Quando a coordenada x do ponto for menor que a da ancora A
+
         m1 = (float)(prevP.y - anchorA.y) / (float)(prevP.x - anchorA.x);
         b1 = (float)anchorA.y - (m1 * (float)anchorA.x);
         m2 = (float)(prevP.y - anchorB.y) / (float)(prevP.x - anchorB.x);
         b2 = (float)anchorB.y - (m2 * (float)anchorB.x);
-        
         
         if( testP.y < (( m1 * testP.x ) + b1) && testP.y > (( m2 * testP.x ) + b2) ){
             return true;
         }else{
             return false;
         }
-        
         
     }else{
         //checa se o ponto de teste esta acima das duas retas ao mesmo tempo
@@ -102,6 +103,42 @@ bool isValidPoint(Point anchorA, Point anchorB, Point prevP, Point testP){
         }
     }
 }
+
+
+/*
+ * Gera rucursivamente todas as sequencias possiveis de pontos e retorna
+ * a quantidade de pontos da maior sequencia gerada.
+ * 
+ * pointsArray : array dos pontos ordenados em relação a cordenada Y *precisa ser liberado usando free().
+ * numberOfPoints : quantidade de pontos.
+ * index : index do ponto que a funcao recursiva sera chamada.
+ * sequence : array auxiliar para guardar um sequencia de pontos.
+ * seqIndex : index no array de sequencia .
+ * anchorA : ancora A.
+ * anchorB : ancora B.
+ * maxSeq : usado para acompanhar o tamanho da maior seq. sempre começa com 0.
+ */
+int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point sequence[], int seqIndex, Point anchorA, Point anchorB, int maxSeq){
+
+    if (index >= numberOfPoints) {
+        
+        if(seqIndex > maxSeq){
+            maxSeq = seqIndex;
+        }
+
+        return maxSeq;
+    }
+
+    
+    // Gera uma sequência que inclui o ponto atual
+    if (seqIndex == 0 || isValidPoint(anchorA, anchorB, sequence[seqIndex-1], pointsArray[index])) {
+        sequence[seqIndex] = pointsArray[index];
+        maxSeq = generateSequences(pointsArray, numberOfPoints, index+1, sequence, seqIndex+1, anchorA, anchorB, maxSeq);
+    }
+ 
+    // Gera sequências que não incluem o ponto atual
+    maxSeq = generateSequences(pointsArray, numberOfPoints, index+1, sequence, seqIndex, anchorA, anchorB, maxSeq);
+};
 
 
 /*

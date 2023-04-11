@@ -8,12 +8,14 @@
 #include "../include/utils.h"
 
 
+// Calcula tempo do usuario
 float diffUserTime(struct rusage *start, struct rusage *end)
 {
     return (end->ru_utime.tv_sec - start->ru_utime.tv_sec) +
            1e-6*(end->ru_utime.tv_usec - start->ru_utime.tv_usec);
 }
 
+// Calcula tempo do sistema
 float diffSystemTime(struct rusage *start, struct rusage *end)
 {
     return (end->ru_stime.tv_sec - start->ru_stime.tv_sec) +
@@ -21,59 +23,23 @@ float diffSystemTime(struct rusage *start, struct rusage *end)
 }
 
 
-/*
- * Gera rucursivamente todas as sequencias possiveis de pontos e retorna
- * a quantidade de pontos da maior sequencia gerada.
- * 
- * pointsArray : array dos pontos ordenados em relação a cordenada Y *precisa ser liberado usando free()
- * numberOfPoints : quantidade de pontos
- * index : index do ponto que a funcao recursiva sera chamada
- * sequence : array auxiliar para guardar um sequencia de pontos
- * seqIndex : index no array de sequencia 
- * anchorA : ancora A
- * anchorB : ancora B
- */
-int generateSequences(Point *pointsArray, int numberOfPoints, int index, Point sequence[], int seqIndex, Point anchorA, Point anchorB, int maxSeq){
-
-    if (index >= numberOfPoints) {
-        
-        if(seqIndex > maxSeq){
-            maxSeq = seqIndex;
-        }
-
-        return maxSeq;
-    }
-
-    
-    // Gera uma sequência que inclui o ponto atual
-    if (seqIndex == 0 || isValidPoint(anchorA, anchorB, sequence[seqIndex-1], pointsArray[index])) {
-        sequence[seqIndex] = pointsArray[index];
-        maxSeq = generateSequences(pointsArray, numberOfPoints, index+1, sequence, seqIndex+1, anchorA, anchorB, maxSeq);
-    }
- 
-    // Gera sequências que não incluem o ponto atual
-    maxSeq = generateSequences(pointsArray, numberOfPoints, index+1, sequence, seqIndex, anchorA, anchorB, maxSeq);
-};
-
-
-
 int main(int argc, char *argv[]){
-    int max = 0 ; //resultado
+    int max = 0 ; // Resultado
 
-    //variaveis i/o
+    // Variaveis i/o
     int opt;
     char *inputFileName = NULL;
     char *outputFileName = NULL;
 
-    //variaveis do problema
+    // Variaveis do problema
     int numberOfPoints;
     Point anchorA, anchorB; 
     Point *pointsArray = NULL;
 
-    //medir tempo
-    struct rusage startC, endC;
-    struct rusage startIO, endIO;
-    struct timeval start, end;
+    // Medir tempo
+    struct rusage startC, endC; // Tempo computação
+    struct rusage startIO, endIO; // Tempo io
+    struct timeval start, end; // Tempo de relgio
 
     if ( argc < 5){
         fprintf(stderr,"Faltando argumentos! \n");
@@ -96,31 +62,29 @@ int main(int argc, char *argv[]){
     }
 
     getrusage(RUSAGE_SELF, &startIO);
-
-    // le o arquivo
+    // Le o arquivo
     inputRead(inputFileName, &pointsArray, &anchorA, &anchorB, &numberOfPoints);
-
     getrusage(RUSAGE_SELF, &endIO);
 
 
-
-    // ordena em ordem crescente os pontos em relacao a cordenada Y
+    // Ordena em ordem crescente os pontos em relacao a cordenada Y.
     qsort(pointsArray, numberOfPoints, sizeof(Point), cmpPointsY);
 
-    //array auxiliar para armazenar as sequencias de pontos
+
+    // Array auxiliar para armazenar as sequencias de pontos.
     Point sequence[numberOfPoints];
 
 
+    // Gera todas as possibilidades e retorna a maior sequencia.
     gettimeofday(&start, NULL);
     getrusage(RUSAGE_SELF, &startC);
 
-    //gera todas as possibilidades e retorna a maior sequencia
     max = generateSequences(pointsArray, numberOfPoints, 0, sequence, 0, anchorA, anchorB, max);
-
 
     getrusage(RUSAGE_SELF, &endC);
     gettimeofday(&end, NULL);
 
+    printf("Maior sequencia possivel: %d.\n" , max);
 
     printf("Tempo de computacao :\n");
     printf("  CPU time: %.06f seg user, %.06f seg system\n", diffUserTime(&startC, &endC), diffSystemTime(&startC, &endC));
@@ -132,11 +96,10 @@ int main(int argc, char *argv[]){
     printf("  CPU time: %.06f seg user, %.06f seg system\n", diffUserTime(&startIO, &endIO), diffSystemTime(&startIO, &endIO));
 
 
-
-
-    //coloca o resultado no .txt
+    // Coloca o resultado no .txt
     outputResult(max, outputFileName);
 
+    // Libera o array de pontos
     free(pointsArray);
     return 0;
 }
